@@ -1,0 +1,44 @@
+.link{
+    text-align: right;
+    padding: 6px;
+    margin-right: 32px;
+    font-size: 20px;
+    word-spacing: 10px;
+}
+
+a:link{
+    color: black;
+    text-decoration: none;
+}
+a:visited{
+    color: black;
+    text-decoration: none;
+}
+a:hover {
+    color: black;
+    background-color: transparent;
+    text-decoration: underline;
+  }
+.search{
+    margin: auto;
+    text-align: center;
+    padding: 350px 0;
+
+    font-size: 26px;
+}
+.search-button{
+    background-color: white;
+    border: 1px solid;
+    border-radius: 4px;
+    color:rgb(30, 25, 25);
+
+    font-size: 14px;
+
+}
+#search-bar{
+    border-radius: 14px;
+    border: 1px solid gray;
+    padding: 20px;
+    width: 500px;
+    height: 10px;
+}
