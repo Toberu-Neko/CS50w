@@ -14,9 +14,7 @@ header{
 .a-search{
     flex-direction: row;
     background-color: white;
-    padding: 0px;    
-    font-family: Arial, Helvetica, sans-serif;
-
+    padding: 0px;
 }
 .a-search input{
     border: 1px solid gray;
