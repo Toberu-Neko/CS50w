@@ -1,0 +1,15 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{title}}
+{% endblock %}
+
+{% block body %}
+
+    {% if data == None%}
+    <h1>Data "{{title}}" not found.</h1>
+    {% else %}
+        {{data|safe}}
+    {% endif %}
+
+{% endblock %}
