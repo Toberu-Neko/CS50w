@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from markdown2 import Markdown
 
+import random
+
 from . import util
 
 markdownData = Markdown()
@@ -103,3 +105,13 @@ def edit(request, title):
             })
         else:
             return HttpResponseRedirect(reverse("gotoTitle", args=[title]))
+ 
+def randomWiki(request):
+     dataList = []
+     for item in util.list_entries():
+         dataList.append(item)
+         
+     title = random.choice(dataList)
+     return HttpResponseRedirect(reverse("gotoTitle", args=[title]))
+     
+      
