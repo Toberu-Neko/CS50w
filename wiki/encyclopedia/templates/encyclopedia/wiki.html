@@ -6,10 +6,11 @@
 
 {% block body %}
 
-    {% if data == None%}
+{% if data == None%}
     <h1>Data "{{title}}" not found.</h1>
-    {% else %}
-        {{data|safe}}
+{% else %}
+    {{data|safe}}
+    <a href="{% url 'edit' title%}">edit</a>
     {% endif %}
 
 {% endblock %}

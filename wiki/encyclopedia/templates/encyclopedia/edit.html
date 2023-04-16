@@ -1,15 +1,14 @@
 {% extends "encyclopedia/layout.html" %}
 
 {% block title %}
-    Create
+    Edit
 {% endblock %}
 
 {% block body %}
-    <h1>Create</h1>
-    {{errorMsg}}
+<h1>Edit {{title}}</h1>
 
     <div>
-        <form action="{% url 'create' %}" method="post">
+        <form action="{% url 'edit' title%}" method="post">
             {% csrf_token %}
             <div style="padding-bottom: 10px">
                 {{form.title}}
