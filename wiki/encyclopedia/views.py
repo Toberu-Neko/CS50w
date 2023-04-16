@@ -26,12 +26,18 @@ def index(request):
 def gotoTitle(request, title):
     if util.get_entry(title) == None:
         return render(request, "encyclopedia/wiki.html",{     
-        "title": title,
+        "title": "Data Not Found",
+        "search": title,
         "data": util.get_entry(title)
     })
     else:
+        for item in util.list_entries():
+            if title.lower() == item.lower():
+                title = item
+        
         return render(request, "encyclopedia/wiki.html",{     
             "title": title,
+            "search": title,
             "data": markdownData.convert(util.get_entry(title))
         })
 
@@ -40,11 +46,10 @@ def search(request):
         title = request.GET['q'].lower()
     except:
         title = "NULL"
+    
     if util.get_entry(title) != None:
-        return render(request, "encyclopedia/wiki.html",{     
-            "title": title,
-            "data": markdownData.convert(util.get_entry(title))
-        })
+        return HttpResponseRedirect(reverse("gotoTitle", args=[title]))
+
     else:
         searchList = []
         noResult = True
@@ -74,7 +79,7 @@ def create(request):
                     # ERROR
                     return render(request, "encyclopedia/create.html",{
                     "form": form,
-                    "errorMsg": f"There is already a title called \"{item}\"."
+                    "errorMsg": f"There is already a title called \"{item}\", case insensitive."
                     })
                     
                     

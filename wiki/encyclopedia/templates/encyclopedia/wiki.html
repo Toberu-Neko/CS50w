@@ -7,7 +7,7 @@
 {% block body %}
 
 {% if data == None%}
-    <h1>Data "{{title}}" not found.</h1>
+    <h1>Data "{{search}}" not found.</h1>
 {% else %}
     {{data|safe}}
     <a href="{% url 'edit' title%}">edit</a>
