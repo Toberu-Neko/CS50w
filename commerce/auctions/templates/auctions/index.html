@@ -3,5 +3,18 @@
 {% block body %}
     <h2>Active Listings</h2>
 
-    TODO
+    {% if noItem %}
+    <h3>No active listings</h3>
+    {% else %}
+        <table>
+        {% for item in allItems %}
+            <tr>
+                <td><img src="{{ item.image }}" alt="image" width="100px" height="100px"></td>
+                <td><a href="{% url 'index' %}">{{ item.title }}</a></td>
+                <td>${{ item.currentPrice }}</td>
+                <td>{{ item.description }}</td>
+            </tr>
+        {% endfor %}    
+        </table>    
+    {% endif %}
 {% endblock %}
