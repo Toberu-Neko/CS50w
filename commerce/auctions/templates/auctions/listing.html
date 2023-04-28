@@ -1,0 +1,66 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>{{listing.title}}</h2>
+    <h2>TODO: You won the auction.</h2>
+    <br>
+    <table style="width: 50%;">
+        <tr>
+            <td>
+                <a href="{% url 'index' %}">TODO: Add to Watchlist</a>
+            </td>
+            <td>
+                <a href="{% url 'index' %}">TODO: Close</a>
+            </td>
+            <td>
+                <form>
+                    TODO: Bid
+                    <input type="text" name="bid" placeholder="Bid">
+                    <input type="submit" value="Bid">
+                </form>
+            </td>
+        </tr>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td>Current Price</td>
+            <td>{{listing.currentPrice}}</td>
+        </tr>
+        <tr>
+            <td>Starting Price</td>
+            <td>{{listing.startPrice}}</td>
+        </tr>
+        <tr>
+            <td>Image</td>
+            <td><img src="{{listing.image}}" alt="image" width="300"></td>
+        </tr>
+        <tr>
+            <td>Category</td>
+            <td>{{listing.category}}</td>
+        </tr>
+
+        <tr>
+            <td>Description</td>
+            <td>{{listing.description}}</td>
+        </tr>
+        <tr>
+            <td>Created Date</td>
+            <td>{{listing.created_date}}</td>
+        </tr>
+    </table>
+    <br>
+    <h4>TODO: Comment</h4>
+    <form>
+        <input type="text" name="bid" placeholder="Comment">
+        <input type="submit" value="Comment">
+    </form>
+    <br>
+    <table>
+        <tr>
+            <td style="width: 20%;">UserName: </td>
+            <td>Comment</td>
+        </tr>
+    </table>
+    
+{% endblock %}

@@ -1,12 +1,23 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.validators import URLValidator
+from django import forms
 
 from .models import User, Listing
 
-
+class createListingForm(forms.ModelForm):
+    categoryKeys = ["None", "Fasion", "Toys", "Electronics", "Home", "Other"]
+    category = forms.ChoiceField(choices=[(x,x) for x in categoryKeys])
+    description = forms.CharField(widget=forms.Textarea)
+    image = forms.URLField(required=False, validators=[URLValidator()])
+    class Meta:
+        model = Listing
+        fields = ['title', 'description', 'startPrice', 'image', 'category']
+    
 def index(request):
     listing = Listing.objects.all()
     noItem = False
@@ -16,7 +27,6 @@ def index(request):
         "allItems": listing,
         "noItem": noItem
     })
-
 
 def login_view(request):
     if request.method == "POST":
@@ -35,13 +45,13 @@ def login_view(request):
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "auctions/login.html")
-
+        users = User.objects.all()
+        return render(request, "auctions/login.html", {
+        })
 
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -68,3 +78,18 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def listing(request, title):
+    listing = Listing.objects.get(title=title)
+    return render(request, "auctions/listing.html",{
+        "listing": listing
+    })
+@login_required(login_url='/login')
+def create_listing(request):
+    if request.method == "POST":
+        return render(request, "auctions/create.html")
+    else:
+        return render(request, "auctions/create.html",{
+            "form": createListingForm(),
+            "categoryKeys": createListingForm().categoryKeys,
+        })

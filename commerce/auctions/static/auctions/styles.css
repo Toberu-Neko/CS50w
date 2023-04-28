@@ -2,14 +2,26 @@ body {
     padding: 10px;
 }
 table{
+    padding: 15px;
     border: 1px solid #ccc;
     border-collapse: collapse;
     width: 90%;
 }
-tr {
-    border: 1px solid #ccc;
-}
+
 td {
     padding: 10px;
-    
 }
+.listing{
+    padding: 20px;
+}
+.listing >h4, h5, div{
+    padding-bottom: 20px;
+}
+.CreateForm{
+    padding: 10px;
+    width: 80%;
+    border: 0px;
+}
+
+
+
