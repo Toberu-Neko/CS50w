@@ -1,24 +1,48 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
 
 {% block body %}
     <h2>{{listing.title}}</h2>
-    <h2>TODO: You won the auction.</h2>
+    <br>
+    {% if not listing.active and listing.bidder == user%}
+    <h4 style="color: red;">You won the auction.</h2>
+    {% elif not listing.active %} 
+    <h4 style="color: red;">This auction is closed.</h2>
+    {% endif %}
     <br>
     <table style="width: 50%;">
         <tr>
+            {% if user.is_authenticated %}
+
+                {% if canAddToWatchlist %}
+                <td style="width: 200px;">
+                    <a href="{% url 'AddWatchlist' listing.id%}">Add to Watchlist</a>
+                </td>
+                {% else %}
+                <td style="width: 200px;">
+                    <a href="{% url 'RemoveWatchlist' listing.id%}">Remove from watchlist</a>
+                </td>
+                {% endif %}
+
+                {% if user == listing.created_by and listing.active%}
+                <td>
+                    <a href="{% url 'CloseBid' listing.id%}">Close</a>
+                </td>
+                {% elif listing.active %}
+                <td>
+                    <form action="{% url 'Bid' listing.id%}" method="post">
+                        {% csrf_token %}
+                        {{bidForm.bidPrice}}
+                        <input type="submit" value="Bid">
+                    </form>
+                </td>
+                {% endif %}
+
+            {% else %}
             <td>
-                <a href="{% url 'index' %}">TODO: Add to Watchlist</a>
+                Plaease login to bid or track items.
             </td>
-            <td>
-                <a href="{% url 'index' %}">TODO: Close</a>
-            </td>
-            <td>
-                <form>
-                    TODO: Bid
-                    <input type="text" name="bid" placeholder="Bid">
-                    <input type="submit" value="Bid">
-                </form>
-            </td>
+            {% endif %}
         </tr>
     </table>
     <br>
@@ -33,7 +57,7 @@
         </tr>
         <tr>
             <td>Image</td>
-            <td><img src="{{listing.image}}" alt="image" width="300"></td>
+            <td><img src="{% static listing.image %}" alt="image" width="300"></td>
         </tr>
         <tr>
             <td>Category</td>
@@ -45,6 +69,14 @@
             <td>{{listing.description}}</td>
         </tr>
         <tr>
+            <td>Created User</td>
+            <td>{{listing.created_by}}</td>
+        </tr>
+        <tr>
+            <td>Current Bidder</td>
+            <td>{{currentBidder}}</td>            
+        </tr>
+        <tr>
             <td>Created Date</td>
             <td>{{listing.created_date}}</td>
         </tr>
@@ -52,7 +84,7 @@
     <br>
     <h4>TODO: Comment</h4>
     <form>
-        <input type="text" name="bid" placeholder="Comment">
+        <input type="text" name="Comment" placeholder="Comment">
         <input type="submit" value="Comment">
     </form>
     <br>
