@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2>
+    {{allItems}}
+
+    {% if noItem %}
+    <h3>Nothing in Watchlist</h3>
+    {% else %}
+        <table>
+        {% for item in watchlist %}
+            <tr>
+                <td style="width: 30%;"><img src="{{ item.image }}" alt="image" width="200"></td>
+                
+                <td class = "listing">
+                    <h4><a href="{% url 'Listing' item.id%}">{{ item.title }}</a></h4>
+                    <h5>Price: ${{ item.currentPrice }}</h5>
+                    <div>{{ item.description }}</div>
+                </td>
+            </tr>
+        {% endfor %}    
+        </table>    
+    {% endif %}
+{% endblock %}
