@@ -3,13 +3,13 @@ from django.core.validators import MinValueValidator
 from django.db import models
 class User(AbstractUser):
     watchList = models.ManyToManyField('Listing', blank=True, related_name="watchList")
-    pass
-
-categoryKeys = [('1',"None"), ('2',"Fasion"), ("3","Toys"), ("4","Electronics"), ("5","Home"), ("6","Other")]
+    
+    
 class Listing(models.Model):
+    categoryKeys = ["None", "Fasion", "Toys", "Electronics", "Home", "Other"]
     title = models.CharField(max_length=64)
-    category = models.CharField(max_length=1, choices=categoryKeys)
-    description = models.CharField(max_length=64)
+    category = models.CharField(max_length=64, choices=[(x,x) for x in categoryKeys])
+    description = models.CharField(max_length=2048)
     
     startPrice = models.FloatField(validators=[MinValueValidator(0.1)])
     currentPrice = models.FloatField(validators=[MinValueValidator(0.1)], default=startPrice)
@@ -18,8 +18,9 @@ class Listing(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     # bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bidder", null=True, blank=True)
     bids = models.ManyToManyField('Bids', blank=True, related_name='listing_bids')
+    comments = models.ManyToManyField('Comments', blank=True, related_name='listing_comments')
     
-    image = models.ImageField(upload_to='listing/images', default='listing/images/None/NoImage.png')
+    image = models.URLField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -36,6 +37,13 @@ class Bids(models.Model):
 
 class Comments(models.Model):
     comment = models.CharField(max_length=64)
+    commentTime = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    com_listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="com_listing")
+    def __str__(self):
+        return f"{self.user} commented on {self.com_listing} at {self.commentTime}"
+    
+    
     
 
     

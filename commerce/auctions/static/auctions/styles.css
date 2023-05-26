@@ -11,6 +11,9 @@ table{
 td {
     padding: 10px;
 }
+.commentTr > tbody > tr{
+    border-bottom: 1px solid #ccc;
+}
 .listing{
     padding: 20px;
 }
@@ -22,6 +25,7 @@ td {
     width: 80%;
     border: 0px;
 }
-
-
+.TitleOfListing{
+    width: 20%;
+}
 

@@ -3,21 +3,12 @@
 {% block body %}
     <h2>Categories</h2>
 
-    {% if noItem %}
-    <h3>No item.</h3>
-    {% else %}
-        <table>
-        {% for item in allItems %}
-            <tr>
-                <td style="width: 30%;"><img src="{{ item.image }}" alt="image" width="200"></td>
-                
-                <td class = "listing">
-                    <h4><a href="{% url 'Listing' item.id%}">{{ item.title }}</a></h4>
-                    <h5>Current Price: ${{ item.currentPrice }}</h5>
-                    <div>{{ item.description }}</div>
-                </td>
-            </tr>
-        {% endfor %}    
-        </table>    
-    {% endif %}
+    <table>
+    <ul>
+    {% for key in categoryKeys %}
+        <li><a href="{% url 'SearchCategory' key %}">{{ key }}</a></li>
+    {% endfor %}    
+    </ul>
+    </table>
+
 {% endblock %}

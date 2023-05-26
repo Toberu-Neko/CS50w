@@ -9,7 +9,9 @@ from django import forms
 
 from .models import User, Listing, Bids, Comments
 
-
+class commentForm(forms.Form):
+    comment = forms.CharField(required=True, widget=forms.Textarea(attrs={'placeholder':'Comment'}))
+    
 class bidForm(forms.Form):
     bidPrice = forms.FloatField(required=True, widget=forms.NumberInput(attrs={'placeholder':'Bid'}))
         
@@ -19,6 +21,7 @@ class createListingForm(forms.ModelForm):
     
     description = forms.CharField(widget=forms.Textarea)
     image = forms.URLField(required=False, validators=[URLValidator()])
+    startPrice = forms.FloatField(validators=[MinValueValidator(0.1)])
     class Meta:
         model = Listing
         fields = ['title', 'description', 'startPrice', 'image', 'category']
@@ -26,6 +29,11 @@ class createListingForm(forms.ModelForm):
 def index(request):
     listing = Listing.objects.filter(active=True)
     noItem = False
+    for item in listing:
+        if item.bids.all().count() > 0:
+            item.currentPrice = item.bids.all().order_by('-bidPrice')[0].bidPrice
+            item.save()
+        
     if len(listing) == 0:
         noItem = True
     return render(request, "auctions/index.html",{
@@ -33,16 +41,30 @@ def index(request):
         "noItem": noItem
     })
     
-#TODO 
 def categories(request):
-    listing = Listing.objects.all()
-    noItem = False
+    categoryKeys = ["None", "Fasion", "Toys", "Electronics", "Home", "Other"]
+    
+    return render(request, "auctions/categories.html",{
+        "categoryKeys": categoryKeys
+    })
+def searchCategory(request, category):
+    listing = Listing.objects.filter(category=category, active=True)
+
+    for item in listing:
+        if item.bids.all().count() > 0:
+            item.currentPrice = item.bids.all().order_by('-bidPrice')[0].bidPrice
+            item.save()
+            
     if len(listing) == 0:
         noItem = True
-    return render(request, "auctions/categories.html",{
-        "allItems": listing,
-        "noItem": noItem
-    })
+    else:
+        noItem = False
+        
+    return render(request, "auctions/searchCategory.html",{
+        "category" : category,
+        "allItems" : listing,
+        "noItem" : noItem
+        })
 
 def login_view(request):
     if request.method == "POST":
@@ -111,18 +133,29 @@ def clickListing(request, item_id):
     else:
         listing.currentPrice = listing.bids.all().order_by('-bidPrice')[0].bidPrice
         currentBidder = listing.bids.all().order_by('-bidPrice')[0].bidder
+        
     listing.save()
     
+    if listing.comments.all().count() == 0:
+        noComment = True
+    else:
+        noComment = False
     
-    
-    form = bidForm()
-    form.fields['bidPrice'].widget.attrs['min'] = listing.currentPrice + 0.01
+    b_form = bidForm()
+    b_form.fields['bidPrice'].widget.attrs['min'] = listing.currentPrice + 0.01
 
+    c_form = commentForm()
+    c_form.fields['comment'].widget.attrs['placeholder'] = "Comment"
+    c_form.fields['comment'].widget.attrs['rows'] = 3
     return render(request, "auctions/listing.html",{
         "canAddToWatchlist" : canAddToWatchlist,
-        "bidForm" : form,
+        "bidForm" : b_form,
         "listing": listing,
         "currentBidder": currentBidder,
+        
+        "commentForm" : c_form,
+        "noComment" : noComment,
+        "comments" : listing.comments.all(),
         "Debug" : listing.bids.all().count()
     })
     
@@ -145,19 +178,28 @@ def create_listing(request):
         )
         return HttpResponseRedirect(reverse("index"))
     else:
+        form = createListingForm()
+        form.fields['startPrice'].widget.attrs['min'] = 0.1
         return render(request, "auctions/create.html",{
-            "form": createListingForm(),
+            "form": form,
             "categoryKeys": createListingForm().categoryKeys,
         })
         
 @login_required(login_url='/login')
 def watchlist(request):
-    wlist = request.user.watchList.all()
+    listing = request.user.watchList.all()
+    
+    for item in listing:
+        if item.bids.all().count() > 0:
+            item.currentPrice = item.bids.all().order_by('-bidPrice')[0].bidPrice
+            item.save()
+            
     noItem = False
-    if len(wlist) == 0:
+    if len(listing) == 0:
         noItem = True
+    
     return render(request, "auctions/watchlist.html",{
-        "watchlist": wlist,
+        "watchlist": listing,
         "noItem": noItem
     })
     
@@ -205,4 +247,22 @@ def closeBid(request, item_id):
     
     else:
         return HttpResponseRedirect(reverse("Listing", args=(item_id,)))
-
+    
+@login_required(login_url='/login')
+def comment(request, item_id):
+    if request.method == "POST":
+        listing = Listing.objects.get(id=item_id)
+        commentStr = request.POST["comment"]
+        
+        commentObj = Comments.objects.create(
+            comment = commentStr,
+            user = request.user,
+            com_listing = listing
+        )
+        listing.comments.add(commentObj)
+        listing.save()
+        commentObj.save()
+        return HttpResponseRedirect(reverse("Listing", args=(item_id,)))
+    else:
+        return HttpResponseRedirect(reverse("Listing", args=(item_id,)))
+    

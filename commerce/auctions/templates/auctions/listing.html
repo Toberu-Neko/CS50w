@@ -4,12 +4,11 @@
 {% block body %}
     <h2>{{listing.title}}</h2>
     <br>
-    {% if not listing.active and listing.bidder == user%}
+    {% if not listing.active and currentBidder == user%}
     <h4 style="color: red;">You won the auction.</h2>
     {% elif not listing.active %} 
     <h4 style="color: red;">This auction is closed.</h2>
     {% endif %}
-    <br>
     <table style="width: 50%;">
         <tr>
             {% if user.is_authenticated %}
@@ -45,54 +44,80 @@
             {% endif %}
         </tr>
     </table>
+
     <br>
-    <table>
+    <table class ="listingTD">
         <tr>
-            <td>Current Price</td>
-            <td>{{listing.currentPrice}}</td>
-        </tr>
-        <tr>
-            <td>Starting Price</td>
-            <td>{{listing.startPrice}}</td>
-        </tr>
-        <tr>
-            <td>Image</td>
-            <td><img src="{% static listing.image %}" alt="image" width="300"></td>
-        </tr>
-        <tr>
-            <td>Category</td>
-            <td>{{listing.category}}</td>
+            <td class="TitleOfListing"><h4>Current Price</h4></td>
+            <td><h4>$ {{listing.currentPrice}}</h4></td>
         </tr>
 
         <tr>
-            <td>Description</td>
+            <td class="TitleOfListing">Image</td>
+            <td><img src="{{listing.image}}" alt="image" width="300"></td>
+        </tr>
+
+
+        <tr>
+            <td class="TitleOfListing">Description</td>
             <td>{{listing.description}}</td>
         </tr>
         <tr>
-            <td>Created User</td>
+            <td class="TitleOfListing">Created User</td>
             <td>{{listing.created_by}}</td>
         </tr>
         <tr>
-            <td>Current Bidder</td>
+            <td class="TitleOfListing">Current Bidder</td>
             <td>{{currentBidder}}</td>            
         </tr>
         <tr>
-            <td>Created Date</td>
+            <td class="TitleOfListing">Created Date</td>
             <td>{{listing.created_date}}</td>
         </tr>
-    </table>
-    <br>
-    <h4>TODO: Comment</h4>
-    <form>
-        <input type="text" name="Comment" placeholder="Comment">
-        <input type="submit" value="Comment">
-    </form>
-    <br>
-    <table>
         <tr>
-            <td style="width: 20%;">UserName: </td>
-            <td>Comment</td>
+            <td class="TitleOfListing">Starting Price</td>
+            <td>$ {{listing.startPrice}}</td>
+        </tr>
+        <tr>
+            <td class="TitleOfListing">Category</td>
+            <td>{{listing.category}}</td>
         </tr>
     </table>
+    <br>
+    <h4>Comment</h4>
+    
+    {{noComments}}
+    {% if user.is_authenticated %}
+    <form action="{% url 'Comment' listing.id%}" method="post">
+        {% csrf_token %}
+        {{commentForm.comment}}
+        <input type="submit" value="Comment">
+    </form>
+    {% else %}
+    <h6>Please login to comment.</h6>
+    {% endif %}
+    <br>
+    {% if noComment %}
+    <table class="commentTr">
+        <tr>
+            <td>There's no comment yet.</td>
+        </tr>
+    </table>
+    {%else%}
+    <table>
+        <tr>
+            <td style="width: 20%;">Time</td>
+            <td style="width: 20%;">UserName</td>
+            <td>Comment</td>
+        </tr>
+        {% for comment in comments %}
+        <tr>
+            <td style="width: 20%;">{{comment.commentTime}}</td>
+            <td style="width: 20%;">{{comment.user}}</td>
+            <td>{{comment.comment}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
     
 {% endblock %}
